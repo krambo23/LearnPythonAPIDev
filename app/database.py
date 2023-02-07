@@ -2,6 +2,8 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
+
+# TODO : Store in Secret File
 db_user = "postgres"
 db_pass = "12345"
 db_ip = "127.0.0.1"

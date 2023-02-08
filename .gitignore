@@ -23,3 +23,7 @@ archive.zip
 # vim temporary files
 *~
 .*.sw?
+
+# Secrets
+secrets.yaml
+app/secrets.yaml

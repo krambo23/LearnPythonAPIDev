@@ -10,13 +10,13 @@ router = APIRouter(prefix="/posts", tags=["Posts"])
 
 
 @router.get("/", response_model=List[schemas.Post])
-def get_posts(db: Session = Depends(get_db), user_id: int = Depends(oauth2.get_current_user)):
+def get_posts(db: Session = Depends(get_db), current_user: int = Depends(oauth2.get_current_user)):
     posts = db.query(models.Post).all()
     return posts
 
 
 @router.get("/{id_}", response_model=schemas.Post)
-def get_post(id_: int, db: Session = Depends(get_db), user_id: int = Depends(oauth2.get_current_user)):
+def get_post(id_: int, db: Session = Depends(get_db), current_user: int = Depends(oauth2.get_current_user)):
     post = db.query(models.Post).filter(models.Post.id == id_).first()
 
     if not post:
@@ -29,7 +29,7 @@ def get_post(id_: int, db: Session = Depends(get_db), user_id: int = Depends(oau
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model=schemas.Post)
 def create_post(post: schemas.PostCreate,
                 db: Session = Depends(get_db),
-                user_id: int = Depends(oauth2.get_current_user)):
+                current_user: int = Depends(oauth2.get_current_user)):
     post = models.Post(**post.dict())
     db.add(post)
     db.commit()
@@ -38,7 +38,7 @@ def create_post(post: schemas.PostCreate,
 
 
 @router.delete("/{id_}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_post(id_: int, db: Session = Depends(get_db), user_id: int = Depends(oauth2.get_current_user)):
+def delete_post(id_: int, db: Session = Depends(get_db), current_user: int = Depends(oauth2.get_current_user)):
     post = db.query(models.Post).filter(models.Post.id == id_)
 
     if post.first() is None:
@@ -54,7 +54,7 @@ def delete_post(id_: int, db: Session = Depends(get_db), user_id: int = Depends(
 @router.put("/{id_}", response_model=schemas.Post)
 def update_post(id_: int, updated_post: schemas.PostCreate,
                 db: Session = Depends(get_db),
-                user_id: int = Depends(oauth2.get_current_user)):
+                current_user: int = Depends(oauth2.get_current_user)):
     post_query = db.query(models.Post).filter(models.Post.id == id_)
     post = post_query.first()
 

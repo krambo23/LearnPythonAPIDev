@@ -3,8 +3,7 @@ from sqlalchemy.orm import Session
 from app import models, schemas
 from app.database import get_db
 import app.oauth2 as oauth2
-from typing import List
-
+from typing import List, Optional
 
 router = APIRouter(prefix="/posts", tags=["Posts"])
 
@@ -13,11 +12,13 @@ router = APIRouter(prefix="/posts", tags=["Posts"])
 def get_posts(db: Session = Depends(get_db),
               current_user: int = Depends(oauth2.get_current_user),
               limit: int = 10,
-              offset: int = 0):
+              offset: int = 0,
+              search: Optional[str] = ""):
 
     # Only Post Creator Can View
     posts = db.query(models.Post).\
         filter(models.Post.owner_id == current_user.id).\
+        filter(models.Post.title.contains(search)).\
         limit(limit).offset(offset).all()
 
     return posts

@@ -5,8 +5,8 @@ from sqlalchemy import pool
 
 from alembic import context
 
-# from app.database import Base
-# from app.config import settings
+from app.models import Base
+from app.config import settings
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -21,7 +21,7 @@ if config.config_file_name is not None:
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-# target_metadata = Base.metadata
+target_metadata = Base.metadata
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
@@ -29,10 +29,10 @@ if config.config_file_name is not None:
 # ... etc.
 
 # Database URI Is Not Hardcoded
-# SQLACHEMY_DATABASE_URL = f"postgresql://{settings.DB_USER}:" \
-#                          f"{settings.DB_PASS}@{settings.DB_IP}:" \
-#                          f"{settings.DB_PORT}/{settings.DB_NAME}"
-# config.set_main_option("sqlalchemy.url", SQLACHEMY_DATABASE_URL)
+SQLACHEMY_DATABASE_URL = f"postgresql+psycopg2://{settings.DB_USER}:" \
+                         f"{settings.DB_PASS}@{settings.DB_IP}:" \
+                         f"{settings.DB_PORT}/{settings.DB_NAME}"
+config.set_main_option("sqlalchemy.url", SQLACHEMY_DATABASE_URL)
 
 
 def run_migrations_offline() -> None:

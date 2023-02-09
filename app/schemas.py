@@ -1,5 +1,5 @@
 from typing import Optional
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, conint
 from datetime import datetime
 
 
@@ -50,3 +50,15 @@ class Post(PostBase):
     class Config:
         orm_mode = True
 
+
+class PostOut(BaseModel):
+    Post: Post
+    votes: int
+
+    class Config:
+        orm_mode = True
+
+
+class Vote(BaseModel):
+    post_id: int
+    direction: conint(ge=0, le=1)

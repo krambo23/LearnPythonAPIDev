@@ -1,39 +1,40 @@
 from fastapi import Response, status, HTTPException, Depends, APIRouter
+from sqlalchemy import func
 from sqlalchemy.orm import Session
-from app import models, schemas
+from app import models, schemas, oauth2
 from app.database import get_db
-import app.oauth2 as oauth2
 from typing import List, Optional
 
 router = APIRouter(prefix="/posts", tags=["Posts"])
 
 
-@router.get("/", response_model=List[schemas.Post])
+@router.get("/", response_model=List[schemas.PostOut])
 def get_posts(db: Session = Depends(get_db),
               current_user: int = Depends(oauth2.get_current_user),
               limit: int = 10,
               offset: int = 0,
               search: Optional[str] = ""):
 
-    # Only Post Creator Can View
-    posts = db.query(models.Post).\
-        filter(models.Post.owner_id == current_user.id).\
-        filter(models.Post.title.contains(search)).\
+    posts = db.query(models.Post, func.count(models.Vote.post_id).label("votes")).\
+        join(models.Vote, models.Vote.post_id == models.Post.id, isouter=True).\
+        group_by(models.Post.id).filter(models.Post.title.contains(search)).\
         limit(limit).offset(offset).all()
 
     return posts
 
 
-@router.get("/{id_}", response_model=schemas.Post)
+@router.get("/{id_}", response_model=schemas.PostOut)
 def get_post(id_: int, db: Session = Depends(get_db), current_user: int = Depends(oauth2.get_current_user)):
-    post = db.query(models.Post).filter(models.Post.id == id_).first()
+    post = db.query(models.Post, func.count(models.Vote.post_id).label("votes")).\
+        join(models.Vote, models.Vote.post_id == models.Post.id, isouter=True).\
+        group_by(models.Post.id).filter(models.Post.id == id_).first()
 
     if not post:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f"Post With Id {id_} Not Found!")
 
     # Only Post Creator Can View
-    if post.owner_id != current_user.id:
+    if post.Post.owner_id != current_user.id:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
                             detail="Cannot Perform Operation")
 

@@ -1,0 +1,20 @@
+version: "3"
+services:
+  api:
+    build: .
+    depends_on:
+      - postgres
+    ports:
+      - "8000:8000"
+
+  postgres:
+    image: postgres:14.6
+    user: postgres
+    environment:
+      - POSTGRES_PASSWORD=12345
+      - POSTGRES_DB=fastapi
+    volumes:
+      - postgres-volume:/var/lib/postgresql/data
+
+volumes:
+  postgres-volume:

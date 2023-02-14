@@ -1,6 +1,10 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.routers import post, user, auth, vote
+from os import system
+
+
+system("alembic upgrade heads")
 
 app = FastAPI()
 

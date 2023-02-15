@@ -2,11 +2,10 @@ version: "3"
 services:
   api:
     build: .
-    env_file: "secrets.yaml"
     depends_on:
       - postgres
     ports:
-      - "80:8000"
+      - "8000:8000"
     volumes:
       - ./:/usr/src/app:ro
 
@@ -14,9 +13,8 @@ services:
     image: postgres:14.6
     user: postgres
     environment:
-      - POSTGRES_PASSWORD=12345
-#      - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
-      - POSTGRES_DB=fastapi
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
     volumes:
       - postgres-volume:/var/lib/postgresql/data
 

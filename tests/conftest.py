@@ -16,7 +16,7 @@ engine = create_engine(SQLACHEMY_DATABASE_URL)
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture
 def session():
     print("Dropping Tables")
     Base.metadata.drop_all(bind=engine)
@@ -31,7 +31,7 @@ def session():
         db.close()
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture
 def client(session):
     def get_test_db():
         try:

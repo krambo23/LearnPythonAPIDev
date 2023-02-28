@@ -1,4 +1,5 @@
 import pytest
+from fastapi import status
 from app.database import get_db, Base
 from app.main import app
 from sqlalchemy import create_engine
@@ -40,3 +41,20 @@ def client(session):
 
     app.dependency_overrides[get_db] = get_test_db
     yield TestClient(app)
+
+
+@pytest.fixture
+def test_user(client):
+    user_data = {
+        "email": "user@email.com",
+        "password": "123"
+    }
+
+    res = client.post("/users", json=user_data)
+
+    assert res.status_code == status.HTTP_201_CREATED
+
+    new_user = res.json()
+    new_user["password"] = user_data["password"]
+    return new_user
+
